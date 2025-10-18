@@ -1,0 +1,31 @@
+### Base URL (set this in your environment or replace inline)
+# @url = http://localhost:7070/api/v1
+
+### Get rooms for a hotel (valid)
+GET {{url}}/hotel/2/rooms
+Accept: application/json
+
+### Get rooms for a hotel that doesn't exist (expect 404)
+GET {{url}}/hotel/999999/rooms
+Accept: application/json
+
+### Add a room to a hotel — body matches RoomDTO fields
+POST {{url}}/hotel/1/rooms
+Content-Type: application/json
+Accept: application/json
+
+{
+  "number": 103,
+  "price": 149.0
+}
+
+### Add a room with empty body (expect 400)
+POST {{url}}/hotel/1/rooms
+Content-Type: application/json
+Accept: application/json
+
+
+### Remove a room by its DB id (preferred)
+DELETE {{url}}/room/1
+Accept: application/json
+
