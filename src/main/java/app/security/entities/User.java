@@ -18,15 +18,22 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "users")
+/**
+ * The purpose of this entity class:
+ * To secure API-endpoints from unauthorized access from bots and hackers.
+ * To validate access rights given users privileges (called Role)
+ */
 public class User implements ISecurityUser {
     private static final PasswordHasher passwordHasher = new PasswordHasher();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @EqualsAndHashCode.Include
+    private String username;
 
     @Column(unique = true, nullable = false)
+    @EqualsAndHashCode.Include
     private String email;
 
 
@@ -36,7 +43,7 @@ public class User implements ISecurityUser {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "username"),
             inverseJoinColumns = @JoinColumn(name = "role_name", referencedColumnName = "name")
     )
     @Builder.Default
@@ -44,12 +51,12 @@ public class User implements ISecurityUser {
     private Set<Role> roles = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.MERGE)
     @Builder.Default
     @ToString.Exclude
     private Set<Source> sources = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
     @ToString.Exclude
     private Set<CrawlLogger> crawlLoggers = new HashSet<>();
@@ -60,6 +67,40 @@ public class User implements ISecurityUser {
     @PrePersist
     public void onCreate(){
         this.createdAt = Instant.now();
+    }
+
+    //TODO: Add to collection helper methods (null safe)
+    public void addCrawlLogger(CrawlLogger crawlLogger){
+        if(crawlLogger == null){
+            return;
+        }
+        crawlLoggers.add(crawlLogger);
+        crawlLogger.setUser(this);
+    }
+
+    public void addSource(Source source){
+        if(source == null){
+            return;
+        }
+        sources.add(source);
+        source.setUser(this);
+    }
+
+    //TODO: Remove from collection helper methods (null safe)
+    public void removeCrawlLogger(CrawlLogger crawlLogger){
+        if(crawlLogger == null){
+            return;
+        }
+        crawlLoggers.remove(crawlLogger);
+        crawlLogger.setUser(null); // in-memory unlink; JPA will DELETE the row due to orphanRemoval
+    }
+
+    public void removeSource(Source source){
+        if(source == null){
+            return;
+        }
+        sources.remove(source);
+        source.setUser(null); // in-memory unlink; JPA will DELETE the row due to orphanRemoval
     }
 
 

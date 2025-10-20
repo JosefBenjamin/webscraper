@@ -12,6 +12,9 @@
 
 
 
+### What's the difference between baseUrl from source, and url fro ScrapedData? ###
+💡 Simple analogy
+![baseUrl_vs_url.png](src/main/resources/images/baseUrl_vs_url.png)
 
 
 
@@ -22,7 +25,8 @@
 
 
 
-### For learning purposes, shows how the projects dependencies interact with each other ### 
+
+### For learning purposes, shows how the projects  dependencies interact with each other ### 
 
 ┌────────────────────────────────────────────────────────────┐
 │                   Presentation Layer                       │
@@ -40,13 +44,13 @@
 │   Your Java Code                                           │
 │   (Services, Controllers, Business Logic)                  │
 │                                                            │
-│   Example:                                                 │
-│   hotelService.createHotel(hotelDto);                      │
-│        │                                                   │
-│        ▼                                                   │
-│   hotelDAO.save(hotelEntity);                              │
-│        │                                                   │
-│        ▼                                                   │
+│                         Example:                           │
+│              hotelService.createHotel(hotelDto);           │
+│                            │                               │
+│                            ▼                               │
+│               hotelDAO.save(hotelEntity);                  │
+│                           │                                │
+│                           ▼                                │
 └────────────────────────────────────────────────────────────┘
                             │
                             ▼

@@ -1,7 +1,6 @@
 package app.routes;
 
 import app.controllers.HotelController;
-import app.controllers.RoomController;
 import io.javalin.apibuilder.EndpointGroup;
 
 import static io.javalin.apibuilder.ApiBuilder.*;

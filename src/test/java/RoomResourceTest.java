@@ -1,7 +1,5 @@
 import app.config.ApplicationConfig;
 import app.config.HibernateConfig;
-import app.dao.HotelDAO;
-import app.dao.IDAO;
 import app.populators.HotelPopulator;
 import app.populators.RoomPopulator;
 import io.javalin.Javalin;

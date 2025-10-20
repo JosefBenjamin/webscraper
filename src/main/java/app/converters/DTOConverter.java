@@ -1,8 +1,5 @@
 package app.converters;
 
-import app.dto.HotelDTO;
-import app.dto.RoomDTO;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
