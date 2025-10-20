@@ -23,6 +23,7 @@ import io.javalin.http.HttpStatus;
 import io.javalin.http.UnauthorizedResponse;
 import io.javalin.security.RouteRole;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +36,18 @@ import java.util.stream.Collectors;
 public class SecurityController implements ISecurityController {
     ObjectMapper objectMapper = new ObjectMapper();
     ITokenSecurity tokenSecurity = new TokenSecurity();
-    private static ISecurityDAO securityDAO;
     private static SecurityController instance;
     private static Logger logger = LoggerFactory.getLogger(SecurityController.class);
+    private static EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+    private static SecurityDAO securityDAO = SecurityDAO.getInstance(emf);
 
     private SecurityController() { }
 
-    public static SecurityController getInstance() { // Singleton because we don't want multiple instances of the same class
+    public static SecurityController getInstance() {
         if (instance == null) {
             instance = new SecurityController();
         }
-        securityDAO = new SecurityDAO(HibernateConfig.getEntityManagerFactory());
+
         return instance;
     }
 
