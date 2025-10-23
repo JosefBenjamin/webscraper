@@ -1,41 +1,75 @@
 package app.routes;
 
-import app.controllers.HotelController;
+import app.config.HibernateConfig;
+import app.controllers.CrawlLogController;
+import app.controllers.HealthController;
+import app.controllers.SourceController;
+import app.services.ScrapeLoggerService;
+import app.services.SourceService;
 import io.javalin.apibuilder.EndpointGroup;
+import jakarta.persistence.EntityManagerFactory;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Routes {
 
     //TODO: Dependencies
-    private final HotelController hotelController = new HotelController();
-    private final RoomController roomController = new RoomController();
+    EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+    ScrapeLoggerService scrapeLoggerService = new ScrapeLoggerService(emf);
+    SourceService sourceService = new SourceService(emf);
+    SourceController sourceController = new SourceController(sourceService);
+    CrawlLogController crawlLogController = new CrawlLogController(scrapeLoggerService);
+    HealthController healthController = new HealthController();
 
     public EndpointGroup getRoutes() {
         return () -> {
-            path("/hotel", () -> {
-                get(ctx -> hotelController.getAllHotels(ctx));               // GET /hotel
-                post(ctx -> hotelController.createHotel(ctx));                // POST /hotel
-
+            //TODO: Top-level path
+            path("/scrape_source", () -> {
+                post(ctx -> sourceController.createSource(ctx)); //Create a source
                     path("/{id}", () -> {
-                        get(ctx -> hotelController.getHotelById(ctx));           // GET /hotel/{id}
-                        put(ctx ->hotelController.updateHotel(ctx));             // PUT /hotel/{id}
-                        delete(ctx -> hotelController.deleteHotel(ctx));         // DELETE /hotel/{id}
+                        get(ctx -> sourceController.getASource(ctx));           // fetch a source config
+                        put(ctx ->sourceController.updateASource(ctx));             // update a source
+                        delete(ctx -> sourceController.deleteASource(ctx));         // delete a source
+                    });
+                    path("/public_sources", () -> {
+                    get(ctx -> sourceController.listPublic(ctx));
+                });
 
-                        path("/rooms", () -> {
-                            get(ctx -> roomController.getRoomsForHotel(ctx));    // GET /hotel/{id}/rooms
-                            post(ctx -> roomController.addRoom(ctx));            // POST /hotel/{id}/rooms
-                            path("/{roomId}", () -> {
-                                delete(ctx -> roomController.removeRoom(ctx));   // DELETE /hotel/{id}/rooms/{roomId}
-                            });
-                        });
+                    path("/my_sources", () -> {
+                        get(ctx -> sourceController.listUserSources(ctx));
                     });
             });
-            path("/room", () -> {
-                path("/{roomId}", () -> {
-                    delete(ctx -> roomController.deleteRoom(ctx));             // DELETE /room/{roomId}
+
+            //TODO: Top-level path
+            path("/scraplog", () -> {
+                path("/{sourceId}", () -> {
+                    path("/run", () -> {
+                        post(ctx -> crawlLogController.startCrawl(ctx));
+                    });
                 });
+
+                path("/{logId}", () -> {
+                    path("/success", () -> {
+                        get(ctx -> crawlLogController.markSuccess(ctx));
+                    });
+
+                    path("/fail", () -> {
+                        get(ctx -> crawlLogController.markFailed(ctx));
+                    });
+
+                    path("/items", () -> {
+                        get(ctx -> crawlLogController.attachItems(ctx));
+                    });
+                });
+
             });
+
+            //TODO: Top-level path
+            path("/healthcheck", () -> {
+                   get(ctx -> healthController.apiHealthCheck(ctx));
+            });
+
         };
     }
+
 }

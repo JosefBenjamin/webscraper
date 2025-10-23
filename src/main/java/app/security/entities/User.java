@@ -32,12 +32,13 @@ public class User implements ISecurityUser {
     @EqualsAndHashCode.Include
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     @EqualsAndHashCode.Include
     private String email;
 
 
     @Column(nullable = false)
+    @ToString.Exclude
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)

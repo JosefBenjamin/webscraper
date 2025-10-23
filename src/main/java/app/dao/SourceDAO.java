@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class SourceDAO implements ICRUD<Source> {
@@ -65,6 +66,7 @@ public class SourceDAO implements ICRUD<Source> {
         }
     }
 
+
     @Override
     public Set<Source> retrieveAll(){
         try(EntityManager em = emf.createEntityManager()){
@@ -72,6 +74,48 @@ public class SourceDAO implements ICRUD<Source> {
                 em.createQuery("SELECT s FROM Source s", Source.class)
                   .getResultList()
             );
+        }
+    }
+
+
+    public boolean existsByOwnerAndName(String ownerUsername, String sourceName){
+    try(EntityManager em = emf.createEntityManager()){
+        Long count = em.createQuery("SELECT COUNT(s) FROM Source s " +
+                                "WHERE LOWER(s.user.username) = LOWER(:username) " +
+                                "AND LOWER(s.name) = LOWER(:sourceName)", Long.class)
+                .setParameter("username", ownerUsername)
+                .setParameter("sourceName", sourceName)
+                .getSingleResult();
+
+        //Count can only be null(no ownerUsername), 0 (ownerUsername but no sourceName) or 1 (found the match) true.
+        return count != null && count > 0;
+        }
+    }
+
+
+    public Set<Source> findAllSourcesByOwner(String ownerUsername){
+        try(EntityManager em = emf.createEntityManager()){
+            List<Source> foundSourcesByOwner = em.createQuery("SELECT s " +
+                    "FROM Source s " +
+                    "WHERE LOWER(s.user.username) = LOWER(:username) " +
+                            "ORDER BY s.createdAt DESC", Source.class)
+                    .setParameter("username", ownerUsername)
+                    .getResultList();
+
+            return new HashSet<>(foundSourcesByOwner);
+        }
+    }
+
+
+    public Set<Source> findAllPublicSources(){
+        try(EntityManager em = emf.createEntityManager()){
+            List<Source> publicSources = em.createQuery(
+                    "SELECT s " +
+                    "FROM Source s " +
+                    "WHERE s.publicReadable = true AND s.enabled = true " +
+                    "ORDER BY s.createdAt DESC", Source.class)
+                    .getResultList();
+            return new HashSet<>(publicSources);
         }
     }
 
@@ -109,6 +153,7 @@ public class SourceDAO implements ICRUD<Source> {
             try {
                 Source foundSource = em.find(Source.class, id);
                 if(foundSource == null){
+                    em.getTransaction().rollback();
                     return false;
                 }
                 em.remove(foundSource);

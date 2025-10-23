@@ -1,5 +1,7 @@
 package app.dao;
 
+import app.entities.Source;
+
 import java.util.Set;
 
 public interface ICRUD <T>{
@@ -14,9 +16,6 @@ public interface ICRUD <T>{
     T update(T entity);
 
     boolean delete(Long id);
-
-
-
 
 
 

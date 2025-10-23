@@ -30,7 +30,7 @@ public class Source {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_username", referencedColumnName = "username",nullable = false)
     @ToString.Exclude
     private User user;
 
@@ -44,6 +44,10 @@ public class Source {
     @ToString.Exclude
     private Set<ScrapedData> items = new HashSet<>();
 
+    /**
+     * Humanreadable nae for what you want to crawl
+     */
+    private String name;
 
     @Column(nullable = false)
     /**
@@ -82,16 +86,31 @@ public class Source {
      * }
      * Purpose: tells the crawler which CSS or XPath selectors to use when scraping.
      * Using:  CSS-Based Extraction — Fast schema-based data extraction using XPath and CSS selectors.
+     * selectorsJson is a String so JPA can store it cleanly as JSONB in Postgres (no fancy ORM magic needed).
      */
     private String selectorsJson;
 
     @Column(nullable = false)
+    /**
+     * True: Everyone has access to what you have scraped
+     * False: Only you and ADMIN have access
+     */
     private boolean publicReadable;
 
+    /**
+     * True: Scrape is ongoing
+     * False: Stop scraping immediately
+     */
     private boolean enabled;
 
+    /**
+     * Created in DB
+     */
     private Instant createdAt;
 
+    /**
+     * Created in DB
+     */
     private Instant updatedAt;
 
 

@@ -2,6 +2,7 @@ package app.utils;
 
 
 import app.exceptions.ApiException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +50,41 @@ public class Utils {
             return objectMapper.writeValueAsString(msgMap);  // Convert the map to JSON
         } catch (Exception e) {
             return "{\"error\": \"Could not convert  message to JSON\"}";
+        }
+    }
+
+    //TODO:  JSON Helpers
+    /**
+     * Converts a Java Map to a JSON string.
+     * What: Serializes a Map<String, Object> into a JSON string format.
+     * Why: So you can store structured data (like selectors) in the database as plain text.
+     * How: Uses Jackson’s ObjectMapper to turn key-value pairs into JSON.
+     */
+    public static String writeJson(Map<String, Object> map) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to convert map to JSON", e);
+        }
+    }
+
+
+    /**
+     * Converts a JSON string back into a Java Map.
+     * What: Deserializes a JSON text from the DB into a usable Map<String, Object>.
+     * Why: So you can work with selectors as normal Java objects in your API.
+     * How: Uses Jackson’s ObjectMapper to parse the JSON into a Map.
+     */
+    public static Map<String, Object> readMap(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            if (json == null || json.isBlank()) {
+                return Map.of();
+            }
+            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JSON string", e);
         }
     }
 

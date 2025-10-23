@@ -17,7 +17,7 @@ public class ScrapedDataDAO implements ICRUD<ScrapedData>{
     }
 
 
-    public ScrapedDataDAO getInstance(EntityManagerFactory emf){
+    public static ScrapedDataDAO getInstance(EntityManagerFactory emf){
         if(emf == null){
             throw new IllegalArgumentException("EMF can't be null");
         }
