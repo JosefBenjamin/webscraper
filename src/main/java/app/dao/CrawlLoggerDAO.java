@@ -21,8 +21,10 @@ public class CrawlLoggerDAO implements ICRUD<CrawlLogger>{
         if(emf == null){
             throw new IllegalArgumentException("EMF can't be null");
         }
-        instance = new CrawlLoggerDAO();
-        CrawlLoggerDAO.emf  = emf;
+        if (instance == null) {
+            instance = new CrawlLoggerDAO();
+            CrawlLoggerDAO.emf  = emf;
+        }
         return instance;
     }
 
@@ -33,17 +35,20 @@ public class CrawlLoggerDAO implements ICRUD<CrawlLogger>{
 
     @Override
     public CrawlLogger persist(CrawlLogger newCrawlLogger){
+        if(newCrawlLogger == null){
+            return null;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(newCrawlLogger == null){
-                return newCrawlLogger;
-            }
             em.getTransaction().begin();
             try{
                 em.persist(newCrawlLogger);
                 em.getTransaction().commit();
                 return newCrawlLogger;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -54,10 +59,11 @@ public class CrawlLoggerDAO implements ICRUD<CrawlLogger>{
 
     @Override
     public CrawlLogger findById(Long id){
+        if(id == null || id <= 0){
+            throw new IllegalArgumentException("id can't be null or negative integer");
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(id == null || id <= 0){
-                throw new IllegalArgumentException("id can't be null or negative integer");
-            }
             return em.find(CrawlLogger.class, id);
         }
     }
@@ -78,17 +84,20 @@ public class CrawlLoggerDAO implements ICRUD<CrawlLogger>{
 
     @Override
     public CrawlLogger update(CrawlLogger newCrawlLogger){
+        if(newCrawlLogger == null){
+            throw new IllegalArgumentException("CrawlLogger cannot be null");
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(newCrawlLogger == null){
-                throw new IllegalArgumentException("CrawlLogger cannot be null");
-            }
             em.getTransaction().begin();
             try {
                 CrawlLogger updatedCrawlLogger = em.merge(newCrawlLogger);
                 em.getTransaction().commit();
                 return updatedCrawlLogger;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -99,18 +108,25 @@ public class CrawlLoggerDAO implements ICRUD<CrawlLogger>{
 
     @Override
     public boolean delete(Long id){
+        if(id == null || id <= 0){
+            return false;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(id == null || id <= 0){
-                return false;
-            }
             em.getTransaction().begin();
             try{
                 CrawlLogger foundLogger = em.find(CrawlLogger.class, id);
+                if (foundLogger == null) {
+                    em.getTransaction().rollback();
+                    return false;
+                }
                 em.remove(foundLogger);
                 em.getTransaction().commit();
                 return true;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }

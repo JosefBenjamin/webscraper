@@ -41,27 +41,12 @@ public class Routes {
             });
 
             //TODO: Top-level path
-            path("/scraplog", () -> {
+            path("/scrape", () -> {
                 path("/{sourceId}", () -> {
                     path("/run", () -> {
                         post(ctx -> crawlLogController.startCrawl(ctx));
                     });
                 });
-
-                path("/{logId}", () -> {
-                    path("/success", () -> {
-                        get(ctx -> crawlLogController.markSuccess(ctx));
-                    });
-
-                    path("/fail", () -> {
-                        get(ctx -> crawlLogController.markFailed(ctx));
-                    });
-
-                    path("/items", () -> {
-                        get(ctx -> crawlLogController.attachItems(ctx));
-                    });
-                });
-
             });
 
             //TODO: Top-level path

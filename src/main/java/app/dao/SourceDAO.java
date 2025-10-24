@@ -36,18 +36,20 @@ public class SourceDAO implements ICRUD<Source> {
 
     @Override
     public Source persist(Source newSource){
-        try(EntityManager em = emf.createEntityManager()){
-            if(newSource == null){
-                return newSource;
-            }
-            em.getTransaction().begin();
-            try{
+        if (newSource == null) {
+            return null;
+        }
 
+        try(EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            try {
                 em.persist(newSource);
                 em.getTransaction().commit();
                 return newSource;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -79,16 +81,19 @@ public class SourceDAO implements ICRUD<Source> {
 
 
     public boolean existsByOwnerAndName(String ownerUsername, String sourceName){
-    try(EntityManager em = emf.createEntityManager()){
-        Long count = em.createQuery("SELECT COUNT(s) FROM Source s " +
-                                "WHERE LOWER(s.user.username) = LOWER(:username) " +
-                                "AND LOWER(s.name) = LOWER(:sourceName)", Long.class)
-                .setParameter("username", ownerUsername)
-                .setParameter("sourceName", sourceName)
-                .getSingleResult();
+        if (ownerUsername == null || sourceName == null) {
+            return false;
+        }
 
-        //Count can only be null(no ownerUsername), 0 (ownerUsername but no sourceName) or 1 (found the match) true.
-        return count != null && count > 0;
+        try(EntityManager em = emf.createEntityManager()){
+            Long count = em.createQuery("SELECT COUNT(s) FROM Source s " +
+                    "WHERE LOWER(s.user.username) = LOWER(:username) " +
+                    "AND LOWER(s.name) = LOWER(:sourceName)", Long.class)
+                    .setParameter("username", ownerUsername.trim())
+                    .setParameter("sourceName", sourceName.trim())
+                    .getSingleResult();
+
+            return count != null && count > 0;
         }
     }
 
@@ -124,17 +129,20 @@ public class SourceDAO implements ICRUD<Source> {
 
     @Override
     public Source update(Source newSource){
+        if (newSource == null) {
+            return null;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(newSource == null){
-                return newSource;
-            }
             em.getTransaction().begin();
             try{
                 Source updatedSource = em.merge(newSource);
                 em.getTransaction().commit();
                 return updatedSource;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -145,10 +153,11 @@ public class SourceDAO implements ICRUD<Source> {
 
     @Override
     public boolean delete(Long id){
+        if (id == null) {
+            return false;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(id == null){
-                return false;
-            }
             em.getTransaction().begin();
             try {
                 Source foundSource = em.find(Source.class, id);
@@ -160,7 +169,9 @@ public class SourceDAO implements ICRUD<Source> {
                 em.getTransaction().commit();
                 return true;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }

@@ -44,20 +44,18 @@ public class ScrapeLoggerService {
     //TODO status: <-----RUNNING----->
     public Long startRunning(Long sourceId, String username){
         try(EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
             try{
-                em.getTransaction().begin();
-
-                Source src = sourceDAO.findById(sourceId);
+                Source src = em.find(Source.class, sourceId);
                 if(src == null){
                     throw new EntityNotFoundException("Source not found; " + sourceId);
                 }
 
-                User requestedByUser = userDAO.findByUsername(username);
+                User requestedByUser = em.find(User.class, username);
                 if(requestedByUser == null){
                     throw new EntityNotFoundException("User not found with: " + username);
                 }
 
-                // Ownership or ADMIN check
                 String srcOwner = src.getUser().getUsername().toLowerCase().trim();
                 String usersUsername = username.toLowerCase().trim();
                 boolean isOwner = srcOwner.equals(usersUsername);
@@ -74,17 +72,19 @@ public class ScrapeLoggerService {
                         .error(null)
                         .build();
 
-                crawlLoggerDAO.persist(crawlLogger);
+                em.persist(crawlLogger);
                 em.getTransaction().commit();
                 return crawlLogger.getId();
-            } catch (Exception e) {
-                em.getTransaction().rollback();
-                throw new RuntimeException(e);
+            } catch (RuntimeException e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                throw e;
             }
         }
     }
 
-
+    /**
 
     //TODO status: <-----UPDATED STATUS----->
     private void updateStatus(Long logId, CrawlStatus status, String errorLog){
@@ -95,14 +95,20 @@ public class ScrapeLoggerService {
             try{
                 em.getTransaction().begin();
                 CrawlLogger foundLog = crawlLoggerDAO.findById(logId);
+                if(foundLog == null){
+                    em.getTransaction().rollback();
+                    throw new EntityNotFoundException("Could not find a crawl log object");
+                }
                 foundLog.setStatus(status);
                 foundLog.setError(errorLog);
                 em.getTransaction().commit();
             } catch (RuntimeException e) {
+                em.getTransaction().rollback();
                 throw new RuntimeException(e);
             }
         }
     }
+
 
 
     //TODO status: <-----SUCCESS----->
@@ -117,6 +123,9 @@ public class ScrapeLoggerService {
         updateStatus(logId, CrawlStatus.FAILED, standardizedErrMsg);
     }
 
+     */
+
+    /**
 
     //TODO: <------- Attach Scraped Data (Items) ------->
     public void attachItems(Long logId, List<ScrapedData> items) {
@@ -143,5 +152,6 @@ public class ScrapeLoggerService {
         }
     }
 
+     */
 
 }

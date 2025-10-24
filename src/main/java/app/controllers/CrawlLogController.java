@@ -29,7 +29,7 @@ public class CrawlLogController {
      * In short: it says “User X has started crawling Source Y”.
      */
     public void startCrawl(Context ctx) {
-        //TODO: Starts a new crawl for the given source and logs it as “RUNNING” in the databas
+        //TODO: Starts a new crawl for the given source and logs it as “RUNNING” in the database
         UserDTO user = requireUser(ctx);
         Long sourceId = ctx.pathParamAsClass("sourceId", Long.class).get();
 
@@ -40,6 +40,7 @@ public class CrawlLogController {
         );
     }
 
+    /**
     //TODO: Marks an existing crawl log as “SUCCESS” when the crawl finishes correctly
     public void markSuccess(Context ctx) {
         Long logId = ctx.pathParamAsClass("logId", Long.class).get();
@@ -66,6 +67,8 @@ public class CrawlLogController {
         ctx.status(200).json(java.util.Map.of("message", "Items attached"));
     }
 
+     */
+
     //TODO: Helps to find a valid user (if applicable) from a http request
     private UserDTO requireUser(Context ctx) {
         UserDTO user = ctx.attribute("user");
@@ -74,6 +77,8 @@ public class CrawlLogController {
         }
         return user;
     }
+
+
 
 
 }

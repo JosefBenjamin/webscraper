@@ -34,17 +34,20 @@ public class ScrapedDataDAO implements ICRUD<ScrapedData>{
 
     @Override
     public ScrapedData persist(ScrapedData item){
+        if (item == null) {
+            return null;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(item == null){
-                return item;
-            }
             em.getTransaction().begin();
             try{
                 em.persist(item);
                 em.getTransaction().commit();
                 return item;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -78,17 +81,20 @@ public class ScrapedDataDAO implements ICRUD<ScrapedData>{
 
     @Override
     public ScrapedData update(ScrapedData newItem){
+        if (newItem == null){
+            return null;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(newItem == null){
-                return newItem;
-            }
             em.getTransaction().begin();
             try{
-            ScrapedData updatedItem = em.merge(newItem);
-            em.getTransaction().commit();
-            return updatedItem;
+                ScrapedData updatedItem = em.merge(newItem);
+                em.getTransaction().commit();
+                return updatedItem;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -99,21 +105,25 @@ public class ScrapedDataDAO implements ICRUD<ScrapedData>{
 
     @Override
     public boolean delete(Long id){
+        if (id == null){
+            return false;
+        }
+
         try(EntityManager em = emf.createEntityManager()){
-            if(id == null){
-                return false;
-            }
             em.getTransaction().begin();
             try{
                 ScrapedData foundItem = em.find(ScrapedData.class, id);
                 if(foundItem == null){
+                    em.getTransaction().rollback();
                     return false;
                 }
                 em.remove(foundItem);
                 em.getTransaction().commit();
                 return true;
             } catch (RuntimeException e) {
-                em.getTransaction().rollback();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 throw new RuntimeException(e);
             }
         }
