@@ -60,7 +60,7 @@ public class Utils {
      * Why: So you can store structured data (like selectors) in the database as plain text.
      * How: Uses Jackson’s ObjectMapper to turn key-value pairs into JSON.
      */
-    public static String writeJson(Map<String, Object> map) {
+    public static String writeToJsonString(Map<String, Object> map) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.writeValueAsString(map);
@@ -68,7 +68,6 @@ public class Utils {
             throw new RuntimeException("Failed to convert map to JSON", e);
         }
     }
-
 
     /**
      * Converts a JSON string back into a Java Map.

@@ -66,6 +66,21 @@ public class ScrapedDataDAO implements ICRUD<ScrapedData>{
         }
     }
 
+    public boolean hashExists(Long sourceId, String hash){
+        if(sourceId == null || hash == null){
+            return false;
+        }
+        try(EntityManager em = emf.createEntityManager()){
+            Long count = em.createQuery("SELECT COUNT(S)" +
+                    "FROM ScrapedData s " +
+                    "WHERE s.source.id = :sid AND " +
+                    "s.hash = :hash", Long.class)
+                    .setParameter("sid", sourceId)
+                    .setParameter("hash", hash)
+                    .getSingleResult();
+            return (count > 0) && (count != null);
+        }
+    }
 
     @Override
     public Set<ScrapedData> retrieveAll(){

@@ -4,6 +4,7 @@ import app.config.HibernateConfig;
 import app.controllers.CrawlLogController;
 import app.controllers.HealthController;
 import app.controllers.SourceController;
+import app.security.enums.SecurityRole;
 import app.services.ScrapeLoggerService;
 import app.services.SourceService;
 import io.javalin.apibuilder.EndpointGroup;
@@ -25,18 +26,18 @@ public class Routes {
         return () -> {
             //TODO: Top-level path
             path("/scrape_source", () -> {
-                post(ctx -> sourceController.createSource(ctx)); //Create a source
+                post(ctx -> sourceController.createSource(ctx), SecurityRole.USER ,SecurityRole.ADMIN ); //Create a source
                     path("/{id}", () -> {
-                        get(ctx -> sourceController.getASource(ctx));           // fetch a source config
-                        put(ctx ->sourceController.updateASource(ctx));             // update a source
-                        delete(ctx -> sourceController.deleteASource(ctx));         // delete a source
+                        get(ctx -> sourceController.getASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);           // fetch a source config
+                        put(ctx ->sourceController.updateASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);             // update a source
+                        delete(ctx -> sourceController.deleteASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);         // delete a source
                     });
                     path("/public_sources", () -> {
-                    get(ctx -> sourceController.listPublic(ctx));
+                    get(ctx -> sourceController.listPublic(ctx), SecurityRole.USER, SecurityRole.ADMIN);
                 });
 
                     path("/my_sources", () -> {
-                        get(ctx -> sourceController.listUserSources(ctx));
+                        get(ctx -> sourceController.listUserSources(ctx), SecurityRole.USER, SecurityRole.ADMIN);
                     });
             });
 
@@ -44,7 +45,7 @@ public class Routes {
             path("/scrape", () -> {
                 path("/{sourceId}", () -> {
                     path("/run", () -> {
-                        post(ctx -> crawlLogController.startCrawl(ctx));
+                        post(ctx -> crawlLogController.startCrawl(ctx), SecurityRole.USER, SecurityRole.ADMIN);
                     });
                 });
             });

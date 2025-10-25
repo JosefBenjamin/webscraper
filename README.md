@@ -1,4 +1,57 @@
 
+### Q: What's the difference between bCrypt and SHA-256? ###
+```
+Bcrypt is for passwords, not data fingerprints.
+Bcrypt is designed to be:
+slow (to make brute-force attacks hard)
+salted (so the same input gives a different hash every time)
+That’s great for security…
+but terrible for detecting duplicates or changes in data.
+```
+
+```
+SHA-256:
+For scraped content, you want:
+Fast hashing (you might hash thousands of items)
+Deterministic output (same input → same hash)
+Compact and unique result
+It's primary use for to make a digital fingerprint of large amounts of data, 
+that can be stored in the DB.
+```
+
+### Q: What does TX meaning in coding lingo? ###
+It means transaction. Used when persisting!
+
+### Q: What is a sidecar? ###
+A sidecar is a helper process or service.
+It runs next to your main application (often in the same container or pod) to handle cross-cutting concerns,
+so your main Java app can stay focused on its core logic.
+
+### Q: What is a requirements.txt file? And what its contents mean? ###
+requirements.txt file is to Python what your pom.xml is to Java.
+It lists all the dependencies needed for the Python code to run.
+
+1. fastapi
+This is the web framework, like  Javalin.
+It lets you define routes such as:
+```@app.post("/crawl")
+   async def crawl(req: CrawlRequest):
+   ...
+```
+
+2. uvicorn[standard]
+
+This is the web server that runs FastAPI — similar to Jetty or Undertow in Java land.
+
+uvicorn serves the HTTP requests.
+
+[standard] adds a few optional extras (uvloop, httptools, etc.) to make it faster and production-ready.
+
+3. crawl4ai
+
+This is the actual web crawler library you want to use. 
+The one that can extract structured data, text, or markdown from web pages using selectors
+
 ### What the Context (ctx) object really is ###
 In Javalin, every route handler gets a Context object.
 You can think of it as your “HTTP toolbox” — it contains:

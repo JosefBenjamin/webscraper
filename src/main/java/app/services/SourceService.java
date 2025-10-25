@@ -43,7 +43,7 @@ public class SourceService {
         s.setName(dto.name());
         s.setBaseUrl(dto.baseUrl());
         s.setAllowedPathPattern(dto.allowedPathPattern());
-        s.setSelectorsJson(Utils.writeJson(dto.selectors()));
+        s.setSelectorsJson(Utils.writeToJsonString(dto.selectors()));
         s.setPublicReadable(dto.publicReadable());
         s.setEnabled(dto.enabled());
 
@@ -98,7 +98,7 @@ public class SourceService {
         }
         if (dto.selectors() != null) {
             requireNonEmptySelectors(dto.selectors());
-            s.setSelectorsJson(Utils.writeJson(dto.selectors()));
+            s.setSelectorsJson(Utils.writeToJsonString(dto.selectors()));
         }
         if (dto.publicReadable() != null) {
             s.setPublicReadable(dto.publicReadable());
