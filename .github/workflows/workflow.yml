@@ -38,8 +38,9 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/webscraper_api:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/webscraper_api
+            ${{ secrets.DOCKERHUB_USERNAME }}/java_api_app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/java_api_app
+
       # --- Build & push CRAWLER image ---
       - name: Build & push Crawler image
         uses: docker/build-push-action@v6
@@ -48,5 +49,5 @@ jobs:
           file: ./pycrawl/crawler/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/webscraper-crawler:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/webscraper-crawler
+            ${{ secrets.DOCKERHUB_USERNAME }}/python_scraper_app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/python_scraper_app
