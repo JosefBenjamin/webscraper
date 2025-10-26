@@ -38,7 +38,8 @@ public class SecurityDAO implements ISecurityDAO{
     @Override
     public UserDTO getVerifiedUser(String username, String password) throws ValidationException {
         try (EntityManager em = emf.createEntityManager()) {
-            User user = em.find(User.class, username);
+            String standardizedUsername = username.toLowerCase().trim();
+            User user = em.find(User.class, standardizedUsername);
             if (user == null) {
                 throw new EntityNotFoundException("No user found with username: " + username); //RuntimeException
             }
@@ -94,7 +95,8 @@ public class SecurityDAO implements ISecurityDAO{
 
             String normalizedRole = newRole.trim().toLowerCase();
 
-            User user = em.find(User.class, userDTO.getUsername());
+            String standardizedUsername = userDTO.getUsername().toLowerCase().trim();
+            User user = em.find(User.class, standardizedUsername);
             if (user == null)
                 throw new EntityNotFoundException("No user found with username: " + userDTO.getUsername());
             em.getTransaction().begin();
