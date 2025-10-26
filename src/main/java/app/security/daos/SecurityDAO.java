@@ -47,7 +47,7 @@ public class SecurityDAO implements ISecurityDAO{
             if (!user.verifyPass(password)) {
                 throw new ValidationException("Wrong password");
             }
-            UserDTO userDTO = new UserDTO(user.getEmail(), user.getRoles().stream()
+            UserDTO userDTO = new UserDTO(user.getUsername(), user.getRoles().stream()
                     .map((r) -> {
                         return r.getName();
                     }).collect(Collectors.toSet()));
