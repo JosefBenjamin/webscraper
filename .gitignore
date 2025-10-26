@@ -54,3 +54,4 @@ desktop.ini
 src/main/java/app/security/http/http-client.env.json
 src/main/resources/config.properties
 src/main/resources/http-client.env.json
+src/main/resources/http-client.private.env.json

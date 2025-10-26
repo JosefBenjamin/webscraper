@@ -29,7 +29,7 @@ public class Routes {
                 post(ctx -> sourceController.createSource(ctx), SecurityRole.USER ,SecurityRole.ADMIN ); //Create a source
                     path("/{id}", () -> {
                         get(ctx -> sourceController.getASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);           // fetch a source config
-                        put(ctx ->sourceController.updateASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);             // update a source
+                        patch(ctx ->sourceController.updateASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);             // update a source
                         delete(ctx -> sourceController.deleteASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);         // delete a source
                     });
                     path("/public_sources", () -> {

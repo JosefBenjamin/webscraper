@@ -12,6 +12,7 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 public class SecurityRoutes {
     private static ObjectMapper jsonMapper = new Utils().getObjectMapper();
     private static SecurityController securityController = SecurityController.getInstance();
+
     public static EndpointGroup getSecurityRoutes() {
         return ()->{
             path("/auth", () -> {

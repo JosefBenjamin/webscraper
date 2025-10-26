@@ -1,4 +1,9 @@
 
+### Q: What's the differecne between PUT and PATCH requests? ###
+PUT = replace the entire resource.
+
+PATCH = partially update the resource.
+
 ### Q: What's the difference between bCrypt and SHA-256? ###
 ```
 Bcrypt is for passwords, not data fingerprints.

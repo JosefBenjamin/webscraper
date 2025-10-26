@@ -1,0 +1,53 @@
+### Public test (no login)
+GET {{url}}/auth/test
+Accept: application/json
+
+
+### Register a USER
+POST {{url}}/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "{{USERNAME}}",
+  "password": "{{PASSWORD}}"
+}
+
+
+### Login → save token
+POST {{url}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "{{USERNAME}}",
+  "password": "{{PASSWORD}}"
+}
+
+> {%
+    client.global.set("jwt_token", response.body.token);
+    console.log("JWT Token:", client.global.get("jwt_token"));
+%}
+
+
+### USER-only demo (should be 200 with user token)
+GET {{url}}/protected/user_demo
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+### ADMIN-only demo (likely 403 with user token)
+GET {{url}}/protected/admin_demo
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+### Add admin role to the current user (requires ADMIN token already!)
+POST {{url}}/auth/user/addrole
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "role": "admin"
+}

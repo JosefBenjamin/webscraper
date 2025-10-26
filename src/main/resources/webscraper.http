@@ -1,0 +1,87 @@
+###Base URL should be setup in http-client.env.json (in the same of folder as the .http endpoint file)
+    #Acces the base url like this {{url}}
+
+# ENDPOINTS ACCESS: ANYONE
+    # For healthcheck
+GET {{url}}/healthcheck
+Accept: application/json
+Content-Type: application/json
+
+
+
+
+### POST ENDPOINTS <---USER/ADMIN ACCESS!--->
+POST {{url}}/scrape_source
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "name": "Men's perfume scraper",
+  "baseUrl": "https://en.parfumdreams.de",
+  "allowedPathPattern": "^/(?:[^/]+/)?Mens-fragrances/.*",
+  "selectors": {
+    "photo": "img.object-scale-down.h-full",
+    "Brand": "p.font-bold",
+    "Perfume name": "p",
+    "Price": "span[id^='price_retail_']"
+  },
+  "publicReadable": true,
+  "enabled": true
+}
+
+### Run the webscraper
+@sourceId=1
+
+POST {{url}}/scrape/{{sourceId}}/run
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+### READ (GET) ENDPOINTS! <---USER/ADMIN ACCESS!--->
+
+@id=1
+# Get a source configuration from a specific Source.id (long id)
+GET {{url}}/scrape_source/{{id}}
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+### GET ALL PUBLIC SOURCES (Those soures that are set to publicReadable = true;)
+GET {{url}}/public_sources
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+### GET ALL USER SOURCES (sources associated with a user profile)
+
+GET {{url}}/scrape_source/my_sources
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+### UPDATE (PUT/PATCH) ENDPOINTS <---USER/ADMIN ACCESS!--->
+@updateId=1
+#Update a source configuration
+PATCH {{url}}/scrape_source/{{updateId}}
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "name": "Men's perfume scraper",
+  "publicReadable": true,
+  "enabled": true
+}
+
+
+### DELETE (DELETE) ENDPOINTS <---USER/ADMIN ACCESS!--->
+@deleteId=1
+
+DELETE {{url}}/scrape_source/{{deleteId}}
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}

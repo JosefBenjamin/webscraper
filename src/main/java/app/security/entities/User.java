@@ -116,14 +116,19 @@ public class User implements ISecurityUser {
     }
 
     //TODO: Constructors
-    public User(String email, String userPass) {
-        this.email = email;
+    public User(String username, String userPass) {
+        this.username = username;
         this.password = passwordHasher.hashPassFirstTime(userPass);
+        this.roles = new HashSet<>();
+        this.sources = new HashSet<>();
+        this.crawlLoggers = new HashSet<>();
     }
 
-    public User(String email, Set<Role> roleEntityList) {
-        this.email = email;
-        this.roles = roleEntityList;
+    public User(String username, Set<Role> roleEntityList) {
+        this.username = username;
+        this.roles = (roleEntityList == null) ? new HashSet<>() : roleEntityList;
+        this.sources = new HashSet<>();
+        this.crawlLoggers = new HashSet<>();
     }
 
 
@@ -136,6 +141,9 @@ public class User implements ISecurityUser {
     public void addRole(Role role) {
         if (role == null) {
             return;
+        }
+        if(roles == null){
+            roles = new HashSet<>();
         }
         roles.add(role);
         role.getUsers().add(this);
