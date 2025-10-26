@@ -31,6 +31,7 @@ public class Role {
 
     public Role(String role){
         this.name = role;
+        this.users = new HashSet<>();
     }
 
 }
