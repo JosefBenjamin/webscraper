@@ -47,7 +47,7 @@ Authorization: Bearer {{jwt_token}}
 
 ### READ (GET) ENDPOINTS! <---USER/ADMIN ACCESS!--->
 
-@id=1
+@id=2
 # Get a source configuration from a specific Source.id (long id)
 GET {{url}}/scrape_source/{{id}}
 Accept: application/json
@@ -56,7 +56,7 @@ Authorization: Bearer {{jwt_token}}
 
 
 ### GET ALL PUBLIC SOURCES (Those soures that are set to publicReadable = true;)
-GET {{url}}/public_sources
+GET {{url}}/scrape_source/public_sources
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}

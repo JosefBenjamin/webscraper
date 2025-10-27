@@ -27,18 +27,13 @@ public class Routes {
             //TODO: Top-level path
             path("/scrape_source", () -> {
                 post(ctx -> sourceController.createSource(ctx), SecurityRole.USER ,SecurityRole.ADMIN ); //Create a source
-                    path("/{id}", () -> {
-                        get(ctx -> sourceController.getASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);           // fetch a source config
-                        patch(ctx ->sourceController.updateASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);             // update a source
-                        delete(ctx -> sourceController.deleteASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);         // delete a source
-                    });
-                    path("/public_sources", () -> {
-                    get(ctx -> sourceController.listPublic(ctx), SecurityRole.USER, SecurityRole.ADMIN);
+                get("/public_sources", ctx -> sourceController.listPublic(ctx), SecurityRole.USER, SecurityRole.ADMIN);
+                get("/my_sources", ctx -> sourceController.listUserSources(ctx), SecurityRole.USER, SecurityRole.ADMIN);
+                path("/{id}", () -> {
+                    get(ctx -> sourceController.getASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);           // fetch a source config
+                    patch(ctx ->sourceController.updateASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);             // update a source
+                    delete(ctx -> sourceController.deleteASource(ctx), SecurityRole.USER, SecurityRole.ADMIN);         // delete a source
                 });
-
-                    path("/my_sources", () -> {
-                        get(ctx -> sourceController.listUserSources(ctx), SecurityRole.USER, SecurityRole.ADMIN);
-                    });
             });
 
             //TODO: Top-level path
