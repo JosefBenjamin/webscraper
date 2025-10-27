@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional, Dict
 from crawl4ai import AsyncWebCrawler
 
@@ -12,6 +12,16 @@ class Field(BaseModel):
 class SelectorSchema(BaseModel):
     list: Optional[str] = None
     fields: Dict[str, Field]
+
+    @validator("fields", pre=True)
+    def normalize_fields(cls, values):
+        normalized = {}
+        for key, value in (values or {}).items():
+            if isinstance(value, dict):
+                normalized[key] = value
+            else:
+                normalized[key] = {"selector": str(value)}
+        return normalized
 
 class CrawlRequest(BaseModel):
     url: str
@@ -33,6 +43,7 @@ async def crawl(req: CrawlRequest):
         }
 
         if req.schema:
+            schema_dict = req.schema.fields
             def get_val(node, rule: Field):
                 return node.get(rule.attr) if rule.attr else node.text()
 
@@ -41,14 +52,16 @@ async def crawl(req: CrawlRequest):
                 items = []
                 for n in nodes:
                     row = {}
-                    for k, rule in req.schema.fields.items():
+                    for k, rule_dict in schema_dict.items():
+                        rule = Field(**rule_dict)
                         el = n.select_one(rule.selector)
                         row[k] = get_val(el, rule) if el else None
                     items.append(row)
                 out["extracted"] = {"items": items}
             else:
                 row = {}
-                for k, rule in req.schema.fields.items():
+                for k, rule_dict in schema_dict.items():
+                    rule = Field(**rule_dict)
                     el = r.select_one(rule.selector)
                     row[k] = get_val(el, rule) if el else None
                 out["extracted"] = row
