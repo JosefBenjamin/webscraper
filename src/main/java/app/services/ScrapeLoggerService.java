@@ -145,6 +145,7 @@ public class ScrapeLoggerService {
                 em.getTransaction().commit();
             }
         } catch (Exception ex) {
+            logger.error("Crawler run {} failed", crawlLogId, ex);
             // 5) On any error, mark FAILED in its own TX
             try (EntityManager em = emf.createEntityManager()) {
                 em.getTransaction().begin();

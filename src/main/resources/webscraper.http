@@ -18,25 +18,25 @@ Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-  "name": "Men's perfume scraper",
-  "baseUrl": "https://en.parfumdreams.de",
+  "name": "perfume scraper",
+  "baseUrl": "https://en.parfumdreams.de/Fragrances/Mens-fragrances/mens-perfumes",
   "allowedPathPattern": "^/(?:[^/]+/)?Mens-fragrances/.*",
   "selectors": {
     "list": ".product-box.grid > a",
     "fields": {
-      "photo": { "selector": "img.object-scale-down.h-full", "attr": "src" },
-      "Brand": { "selector": "p.font-bold" },
+      "photo":        { "selector": "img.object-scale-down.h-full", "attr": "src" },
+      "Brand":        { "selector": "p.font-bold" },
       "Perfume name": { "selector": "p" },
-      "Price": { "selector": "span[id^='price_retail_']" }
+      "Price":        { "selector": "span[id^=\"price_retail_\"]" }
     }
   },
   "publicReadable": true,
   "enabled": true
 }
 
-### Run the webscraper
 
-@sourceId=1
+### Run the webscraper
+@sourceId=4
 
 # @no-redirect
 POST {{url}}/scrape/{{sourceId}}/run
@@ -70,7 +70,7 @@ Authorization: Bearer {{jwt_token}}
 
 
 ### UPDATE (PUT/PATCH) ENDPOINTS <---USER/ADMIN ACCESS!--->
-@updateId=1
+@updateId=2
 #Update a source configuration
 PATCH {{url}}/scrape_source/{{updateId}}
 Accept: application/json
@@ -78,9 +78,8 @@ Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-  "name": "Men's perfume scraper",
-  "publicReadable": true,
-  "enabled": true
+  "name": "The Perfume scraper"
+
 }
 
 
