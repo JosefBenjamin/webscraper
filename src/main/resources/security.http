@@ -15,7 +15,6 @@ Accept: application/json
 
 
 ### Login → save token
-# @no-redirect
 POST {{url}}/auth/login
 Content-Type: application/json
 Accept: application/json
@@ -26,8 +25,14 @@ Accept: application/json
 }
 
 > {%
-    client.global.set("jwt_token", response.body.token);
-    console.log("JWT Token:", client.global.get("jwt_token"));
+    const body = response.body;
+    if (body && body.token) {
+        client.global.set("jwt_token", body.token);
+        console.log("JWT Token:", body.token);
+    } else {
+        client.global.set("jwt_token", "");
+        console.log("JWT Token missing in response");
+    }
 %}
 
 

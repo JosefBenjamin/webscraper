@@ -32,9 +32,13 @@ public class UserDAO {
                 return null;
             }
             String standardizedUsername = username.toLowerCase().trim();
-            return em.find(User.class, standardizedUsername);
+            User user = em.find(User.class, standardizedUsername);
+            if (user != null) {
+                user.getRoles().size();      // initialize before closing EntityManager
             }
+            return user;
         }
+    }
 
     public Set<User> retrieveAll() {
     try(EntityManager em = emf.createEntityManager()){

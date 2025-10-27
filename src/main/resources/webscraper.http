@@ -11,6 +11,7 @@ Content-Type: application/json
 
 
 ### POST ENDPOINTS <---USER/ADMIN ACCESS!--->
+# @no-redirect
 POST {{url}}/scrape_source
 Accept: application/json
 Content-Type: application/json
@@ -21,18 +22,23 @@ Authorization: Bearer {{jwt_token}}
   "baseUrl": "https://en.parfumdreams.de",
   "allowedPathPattern": "^/(?:[^/]+/)?Mens-fragrances/.*",
   "selectors": {
-    "photo": "img.object-scale-down.h-full",
-    "Brand": "p.font-bold",
-    "Perfume name": "p",
-    "Price": "span[id^='price_retail_']"
+    "list": ".product-box.grid > a",
+    "fields": {
+      "photo": { "selector": "img.object-scale-down.h-full", "attr": "src" },
+      "Brand": { "selector": "p.font-bold" },
+      "Perfume name": { "selector": "p" },
+      "Price": { "selector": "span[id^='price_retail_']" }
+    }
   },
   "publicReadable": true,
   "enabled": true
 }
 
 ### Run the webscraper
+
 @sourceId=1
 
+# @no-redirect
 POST {{url}}/scrape/{{sourceId}}/run
 Accept: application/json
 Content-Type: application/json
